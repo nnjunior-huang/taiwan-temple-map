@@ -919,8 +919,10 @@ updateCamera(); buildRankList(); buildCalendar(); buildStampGrid(); animate();
 // ═══════════════════════════════════════════════════
 const TDX_CLIENT_ID     = 'j9341471-83b30e8e-6903-406f';
 const TDX_CLIENT_SECRET = '3de8b635-6de6-4ce0-b03d-538d181dec1c';
-const TDX_TOKEN_URL     = 'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token';
-const TDX_BASE          = 'https://tdx.transportdata.tw/api/basic/v2';
+const PROXY             = 'https://tdx-proxy.j9341471.workers.dev';
+const TDX_TOKEN_URL     = PROXY + '?url=' + encodeURIComponent('https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token');
+const TDX_BASE_RAW      = 'https://tdx.transportdata.tw/api/basic/v2';
+const TDX_BASE          = { toString: ()=>TDX_BASE_RAW, proxy: PROXY };
 
 let tdxToken = null;
 
@@ -942,7 +944,8 @@ function showStatus(msg, autoHide=true) {
 async function getTDXToken() {
   try {
     showStatus('🔑 正在取得 TDX 授權...', false);
-    const resp = await fetch(TDX_TOKEN_URL, {
+    const tokenUrl = PROXY + '?url=' + encodeURIComponent('https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token');
+    const resp = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -969,7 +972,8 @@ async function fetchTDXTemples() {
   try {
     // Filter for temple-related scenic spots in Taiwan
     const filter = encodeURIComponent("contains(ScenicSpotName,'宮') or contains(ScenicSpotName,'廟') or contains(ScenicSpotName,'寺') or contains(ScenicSpotName,'堂')");
-    const url = `${TDX_BASE}/Tourism/ScenicSpot?$filter=${filter}&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$top=50&$format=JSON`;
+    const rawUrl = `https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot?$filter=${filter}&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$top=50&$format=JSON`;
+    const url = PROXY + '?url=' + encodeURIComponent(rawUrl);
 
     const resp = await fetch(url, {
       headers: { Authorization: `Bearer ${tdxToken}` }
@@ -1011,7 +1015,8 @@ async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
     const filter = encodeURIComponent("contains(ActivityName,'媽祖') or contains(ActivityName,'廟會') or contains(ActivityName,'遶境') or contains(ActivityName,'祭典') or contains(ActivityName,'祈福')");
-    const url = `${TDX_BASE}/Tourism/Activity?$filter=${filter}&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$top=20&$orderby=StartTime desc&$format=JSON`;
+    const rawUrl2 = `https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity?$filter=${filter}&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$top=20&$orderby=StartTime desc&$format=JSON`;
+    const url = PROXY + '?url=' + encodeURIComponent(rawUrl2);
 
     const resp = await fetch(url, {
       headers: { Authorization: `Bearer ${tdxToken}` }
