@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣廟宇文化地圖｜Taiwan Temple Guide｜台湾寺院ガイド</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+JP:wght@400;700;900&display=swap');
+
+:root {
+  --gold:  #D4A017;
+  --ink:   #1A0A00;
+  --smoke: #F5EFE6;
+  --ember: #E85D04;
+  --dim:   rgba(26,10,0,0.55);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Sans TC', 'Noto Serif JP', sans-serif;
+  background: var(--ink);
+  color: var(--smoke);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 18px;
+  background: linear-gradient(90deg,#1A0A00 60%,#2D1200);
+  border-bottom: 2px solid var(--gold);
+  z-index: 20;
+  flex-shrink: 0;
+  gap: 10px;
+}
+.logo {
+  font-family: 'Noto Serif TC','Noto Serif JP',serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: .14em;
+  color: var(--gold);
+  text-shadow: 0 0 18px rgba(212,160,23,.5);
+  white-space: nowrap;
+}
+.logo span { color: var(--ember); }
+.header-right { display:flex; align-items:center; gap:10px; }
+
+/* NAV TABS */
+.nav-tabs { display:flex; gap:4px; }
+.nav-btn {
+  background: transparent;
+  border: 1px solid rgba(212,160,23,.4);
+  color: rgba(212,160,23,.7);
+  font-family: inherit;
+  font-size: .72rem;
+  padding: 4px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.nav-btn.active, .nav-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* LANG */
+.lang-toggle { display:flex; gap:4px; }
+.lang-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: .72rem;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.lang-btn.active,.lang-btn:hover { background:var(--gold); color:var(--ink); }
+
+/* MAIN */
+.main { display:flex; flex:1; overflow:hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg,#1E0D02 0%,#120700 100%);
+  border-right: 1px solid rgba(212,160,23,.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* PANEL switcher inside sidebar */
+.panel { display:none; flex-direction:column; flex:1; overflow:hidden; }
+.panel.active { display:flex; }
+
+/* Rank panel */
+.rank-header {
+  padding: 13px 15px 9px;
+  border-bottom: 1px solid rgba(212,160,23,.2);
+  display: flex; align-items:center; gap:7px;
+}
+.rank-title {
+  font-family:'Noto Serif TC','Noto Serif JP',serif;
+  font-size: .88rem; font-weight:600; color:var(--gold); letter-spacing:.1em;
+}
+.rank-list { overflow-y:auto; flex:1; padding:6px 0; }
+.rank-list::-webkit-scrollbar { width:4px; }
+.rank-list::-webkit-scrollbar-thumb { background:rgba(212,160,23,.3); border-radius:2px; }
+.rank-item {
+  display:flex; align-items:center; gap:9px;
+  padding:8px 14px; cursor:pointer;
+  transition:background .15s;
+  border-left:3px solid transparent;
+}
+.rank-item:hover { background:rgba(212,160,23,.08); border-left-color:var(--gold); }
+.rank-item.active { background:rgba(212,160,23,.14); border-left-color:var(--ember); }
+.rank-num { font-family:'Noto Serif TC',serif; font-size:.95rem; font-weight:900; width:22px; text-align:center; flex-shrink:0; }
+.rank-num.top1{color:#FFD700;} .rank-num.top2{color:#C0C0C0;} .rank-num.top3{color:#CD7F32;} .rank-num.other{color:rgba(212,160,23,.5);font-size:.8rem;}
+.rank-info { flex:1; min-width:0; }
+.rank-name { font-size:.83rem; font-weight:500; color:var(--smoke); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rank-deity { font-size:.7rem; color:rgba(245,239,230,.5); margin-top:1px; }
+.ibar-wrap { width:55px; flex-shrink:0; }
+.ibar { height:4px; border-radius:3px; background:linear-gradient(90deg,var(--ember),var(--gold)); margin-bottom:2px; }
+.iscore { font-size:.62rem; color:var(--gold); text-align:right; }
+
+/* Calendar panel */
+.cal-header {
+  padding:13px 15px 9px;
+  border-bottom:1px solid rgba(212,160,23,.2);
+}
+.cal-title {
+  font-family:'Noto Serif TC','Noto Serif JP',serif;
+  font-size:.88rem; font-weight:600; color:var(--gold); letter-spacing:.1em;
+}
+.cal-month-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:8px;
+}
+.cal-month-label { font-size:.82rem; color:var(--smoke); }
+.cal-arrow {
+  background:none; border:1px solid rgba(212,160,23,.35); color:var(--gold);
+  width:22px; height:22px; border-radius:2px; cursor:pointer; font-size:.9rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.cal-arrow:hover { background:rgba(212,160,23,.15); }
+.cal-list { overflow-y:auto; flex:1; padding:8px 0; }
+.cal-list::-webkit-scrollbar { width:4px; }
+.cal-list::-webkit-scrollbar-thumb { background:rgba(212,160,23,.3); border-radius:2px; }
+.cal-item {
+  padding:9px 14px;
+  border-left:3px solid var(--ember);
+  margin:4px 10px;
+  background:rgba(212,160,23,.05);
+  border-radius:0 3px 3px 0;
+  cursor:pointer;
+  transition:background .15s;
+}
+.cal-item:hover { background:rgba(212,160,23,.12); }
+.cal-date { font-size:.68rem; color:var(--ember); letter-spacing:.06em; margin-bottom:2px; }
+.cal-event-name { font-size:.82rem; color:var(--smoke); font-weight:500; }
+.cal-temple-ref { font-size:.7rem; color:rgba(212,160,23,.65); margin-top:2px; }
+.cal-empty { padding:20px 14px; font-size:.8rem; color:rgba(245,239,230,.35); text-align:center; }
+
+/* Stamp panel */
+.stamp-header {
+  padding:13px 15px 9px;
+  border-bottom:1px solid rgba(212,160,23,.2);
+}
+.stamp-title {
+  font-family:'Noto Serif TC','Noto Serif JP',serif;
+  font-size:.88rem; font-weight:600; color:var(--gold); letter-spacing:.1em;
+}
+.stamp-progress {
+  font-size:.7rem; color:rgba(212,160,23,.6); margin-top:4px;
+}
+.stamp-prog-bar {
+  height:3px; background:rgba(212,160,23,.15); border-radius:2px; margin-top:6px; overflow:hidden;
+}
+.stamp-prog-fill {
+  height:100%; background:linear-gradient(90deg,var(--ember),var(--gold));
+  border-radius:2px; transition:width .5s ease;
+}
+.stamp-grid {
+  overflow-y:auto; flex:1; padding:10px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:7px;
+}
+.stamp-grid::-webkit-scrollbar { width:4px; }
+.stamp-grid::-webkit-scrollbar-thumb { background:rgba(212,160,23,.3); border-radius:2px; }
+.stamp-cell {
+  aspect-ratio:1; border-radius:4px;
+  border:1px solid rgba(212,160,23,.2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:.58rem; color:rgba(245,239,230,.3); text-align:center; padding:3px;
+  cursor:pointer; transition:all .2s; background:rgba(0,0,0,.2);
+  position:relative; overflow:hidden;
+}
+.stamp-cell.collected {
+  border-color:var(--gold); color:var(--gold);
+  background:rgba(212,160,23,.1);
+}
+.stamp-cell .stamp-emoji { font-size:1.3rem; margin-bottom:2px; }
+.stamp-cell .stamp-num {
+  position:absolute; top:2px; right:4px;
+  font-size:.55rem; color:rgba(212,160,23,.5);
+}
+.stamp-cell.collected .stamp-num { color:var(--ember); }
+.stamp-cell:hover { border-color:rgba(212,160,23,.5); background:rgba(212,160,23,.06); }
+.stamp-unlock-flash {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:rgba(26,10,0,.95); border:2px solid var(--gold);
+  border-radius:8px; padding:28px 36px; text-align:center; z-index:100;
+  display:none; animation:popIn .3s ease;
+}
+.stamp-unlock-flash.show { display:block; }
+@keyframes popIn { from{transform:translate(-50%,-50%) scale(.7);opacity:0} to{transform:translate(-50%,-50%) scale(1);opacity:1} }
+.flash-emoji { font-size:3rem; margin-bottom:8px; }
+.flash-title { font-family:'Noto Serif TC',serif; font-size:1.1rem; color:var(--gold); margin-bottom:4px; }
+.flash-sub { font-size:.78rem; color:rgba(245,239,230,.65); }
+
+/* MAP AREA */
+.map-area {
+  flex:1; position:relative; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%,#1a0800 0%,#0a0400 100%);
+}
+canvas { display:block; width:100%; height:100%; }
+
+/* INFO CARD */
+.info-card {
+  position:absolute; top:16px; right:16px; width:272px;
+  background:rgba(26,10,0,.93); border:1px solid var(--gold);
+  border-radius:4px; backdrop-filter:blur(8px);
+  padding:16px; display:none; z-index:5;
+  animation:slideIn .2s ease;
+  max-height:calc(100% - 32px); overflow-y:auto;
+}
+.info-card::-webkit-scrollbar { width:3px; }
+.info-card::-webkit-scrollbar-thumb { background:rgba(212,160,23,.3); border-radius:2px; }
+.info-card.visible { display:block; }
+@keyframes slideIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+.card-close {
+  position:absolute; top:9px; right:11px;
+  background:none; border:none; color:rgba(245,239,230,.4);
+  font-size:1rem; cursor:pointer; line-height:1;
+}
+.card-close:hover { color:var(--smoke); }
+.card-rank { font-size:.67rem; color:var(--ember); letter-spacing:.12em; margin-bottom:3px; }
+.card-name { font-family:'Noto Serif TC','Noto Serif JP',serif; font-size:1.2rem; font-weight:900; color:var(--gold); line-height:1.3; margin-bottom:2px; }
+.card-deity { font-size:.78rem; color:var(--ember); margin-bottom:8px; }
+.card-divider { border:none; border-top:1px solid rgba(212,160,23,.2); margin:8px 0; }
+.card-desc { font-size:.78rem; color:rgba(245,239,230,.75); line-height:1.7; margin-bottom:8px; }
+.card-meta { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+.meta-item { background:rgba(212,160,23,.07); border-radius:3px; padding:5px 7px; }
+.meta-label { font-size:.62rem; color:rgba(212,160,23,.6); letter-spacing:.07em; margin-bottom:1px; }
+.meta-value { font-size:.75rem; color:var(--smoke); }
+.incense-full-bar { margin-top:9px; height:5px; background:rgba(212,160,23,.15); border-radius:3px; overflow:hidden; }
+.incense-fill { height:100%; background:linear-gradient(90deg,var(--ember),var(--gold)); border-radius:3px; transition:width .5s ease; }
+.incense-label { display:flex; justify-content:space-between; margin-top:3px; font-size:.62rem; color:rgba(212,160,23,.6); }
+
+/* Card stamp section */
+.card-stamp-section { margin-top:10px; padding-top:8px; border-top:1px solid rgba(212,160,23,.2); display:flex; align-items:center; gap:9px; }
+.card-stamp-icon { font-size:1.5rem; }
+.card-stamp-text { font-size:.75rem; color:rgba(245,239,230,.65); }
+.card-stamp-btn {
+  margin-top:4px; background:linear-gradient(90deg,#8B1A00,#C0392B);
+  border:none; color:#fff; font-family:inherit; font-size:.72rem;
+  padding:4px 10px; border-radius:2px; cursor:pointer; transition:opacity .2s;
+}
+.card-stamp-btn:hover { opacity:.85; }
+.card-stamp-btn.collected { background:rgba(212,160,23,.2); color:var(--gold); cursor:default; }
+
+/* HINT */
+.map-hint {
+  position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+  font-size:.7rem; color:rgba(245,239,230,.3); letter-spacing:.08em;
+  pointer-events:none; text-align:center;
+}
+
+/* PARTICLES */
+#particles { position:absolute; inset:0; pointer-events:none; z-index:1; }
+.particle {
+  position:absolute; width:2px; height:2px; background:var(--gold);
+  border-radius:50%; opacity:0; animation:float linear infinite;
+}
+@keyframes float {
+  0%   { transform:translateY(0) translateX(0); opacity:0; }
+  10%  { opacity:.6; }
+  90%  { opacity:.3; }
+  100% { transform:translateY(-110px) translateX(var(--dx)); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏮 <span>台灣</span>廟宇文化地圖</div>
+  <div class="header-right">
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="switchPanel('rank',this)" id="navRank">🔥 <span data-zh="排行" data-en="Rank" data-ja="ランキング">排行</span></button>
+      <button class="nav-btn" onclick="switchPanel('cal',this)" id="navCal">📅 <span data-zh="節慶" data-en="Festivals" data-ja="祭り">節慶</span></button>
+      <button class="nav-btn" onclick="switchPanel('stamp',this)" id="navStamp">🎑 <span data-zh="集章" data-en="Stamps" data-ja="スタンプ">集章</span></button>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('zh')">繁中</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <aside class="sidebar">
+
+    <!-- RANK PANEL -->
+    <div class="panel active" id="panelRank">
+      <div class="rank-header">
+        <span style="font-size:1.1rem">🔥</span>
+        <span class="rank-title" data-zh="香火鼎盛排行" data-en="Incense Ranking" data-ja="香火ランキング">香火鼎盛排行</span>
+      </div>
+      <div class="rank-list" id="rankList"></div>
+    </div>
+
+    <!-- CALENDAR PANEL -->
+    <div class="panel" id="panelCal">
+      <div class="cal-header">
+        <div class="cal-title" data-zh="廟會節慶行事曆" data-en="Festival Calendar" data-ja="祭りカレンダー">廟會節慶行事曆</div>
+        <div class="cal-month-nav">
+          <button class="cal-arrow" onclick="calPrev()">‹</button>
+          <span class="cal-month-label" id="calMonthLabel"></span>
+          <button class="cal-arrow" onclick="calNext()">›</button>
+        </div>
+      </div>
+      <div class="cal-list" id="calList"></div>
+    </div>
+
+    <!-- STAMP PANEL -->
+    <div class="panel" id="panelStamp">
+      <div class="stamp-header">
+        <div class="stamp-title" data-zh="廟宇集章" data-en="Temple Stamps" data-ja="寺院スタンプ">廟宇集章</div>
+        <div class="stamp-progress" id="stampProgress"></div>
+        <div class="stamp-prog-bar"><div class="stamp-prog-fill" id="stampProgFill"></div></div>
+      </div>
+      <div class="stamp-grid" id="stampGrid"></div>
+    </div>
+
+  </aside>
+
+  <!-- MAP -->
+  <div class="map-area">
+    <div id="particles"></div>
+    <canvas id="mapCanvas"></canvas>
+
+    <div class="info-card" id="infoCard">
+      <button class="card-close" onclick="closeCard()">✕</button>
+      <div class="card-rank" id="cardRank"></div>
+      <div class="card-name" id="cardName"></div>
+      <div class="card-deity" id="cardDeity"></div>
+      <hr class="card-divider">
+      <div class="card-desc" id="cardDesc"></div>
+      <div class="card-meta" id="cardMeta"></div>
+      <div class="incense-full-bar"><div class="incense-fill" id="incenseFill"></div></div>
+      <div class="incense-label">
+        <span data-zh="香火指數" data-en="Incense Index" data-ja="香火指数">香火指數</span>
+        <span id="incenseScore"></span>
+      </div>
+      <div class="card-stamp-section" id="cardStampSection">
+        <div class="card-stamp-icon" id="cardStampIcon"></div>
+        <div>
+          <div class="card-stamp-text" id="cardStampText"></div>
+          <button class="card-stamp-btn" id="cardStampBtn" onclick="collectStamp()"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-hint" data-zh="拖曳旋轉 · 滾輪縮放 · 點選廟宇" data-en="Drag to rotate · Scroll to zoom · Click temples" data-ja="ドラッグで回転 · スクロールでズーム · 寺院をクリック">
+      拖曳旋轉 · 滾輪縮放 · 點選廟宇
+    </div>
+  </div>
+</div>
+
+<!-- STAMP UNLOCK FLASH -->
+<div class="stamp-unlock-flash" id="stampFlash">
+  <div class="flash-emoji" id="flashEmoji"></div>
+  <div class="flash-title" id="flashTitle"></div>
+  <div class="flash-sub" id="flashSub"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const TEMPLES = [
+  { id:1,rank:1,score:98, lat:24.354,lng:120.622, color:'#FFD700', emoji:'🏮',
+    zh:{name:'大甲鎮瀾宮',deity:'媽祖',city:'台中',address:'台中市大甲區順天路158號',desc:'全台最具規模的媽祖廟之一，每年媽祖遶境進香活動吸引數十萬信徒參與，被稱為「台灣最盛大的宗教活動」。'},
+    en:{name:'Dajia Jenn Lann Temple',deity:'Mazu (Sea Goddess)',city:'Taichung',address:'No.158, Shuntian Rd., Dajia Dist.',desc:"One of Taiwan's most influential Mazu temples. Its annual pilgrimage attracts hundreds of thousands of devotees and is called 'Taiwan\'s most grand religious event'."},
+    ja:{name:'大甲鎮瀾宮',deity:'媽祖（海の女神）',city:'台中',address:'台中市大甲区順天路158号',desc:'台湾最大規模の媽祖廟のひとつ。毎年行われる媽祖遶境（巡礼）は数十万人の信者が参加し、「台湾最大の宗教行事」と称される。'}
+  },
+  { id:2,rank:2,score:96, lat:23.570,lng:120.298, color:'#FFD700', emoji:'🕯️',
+    zh:{name:'北港朝天宮',deity:'媽祖',city:'雲林',address:'雲林縣北港鎮中山路178號',desc:'創建於1694年，是台灣歷史最悠久的媽祖廟之一，香火鼎盛，每年吸引超過百萬香客朝聖。'},
+    en:{name:'Beigang Chaotian Temple',deity:'Mazu',city:'Yunlin',address:'No.178, Zhongshan Rd., Beigang',desc:"Founded in 1694, one of Taiwan's oldest Mazu temples, attracting over one million pilgrims annually."},
+    ja:{name:'北港朝天宮',deity:'媽祖',city:'雲林',address:'雲林県北港鎮中山路178号',desc:'1694年創建。台湾最古の媽祖廟のひとつで、毎年100万人以上の参拝者が訪れる。'}
+  },
+  { id:3,rank:3,score:95, lat:25.037,lng:121.500, color:'#E040FB', emoji:'🪷',
+    zh:{name:'艋舺龍山寺',deity:'觀世音菩薩',city:'台北',address:'台北市萬華區廣州街211號',desc:'建於1738年，是台北最古老、最知名的寺廟，同時供奉佛教、道教、民間信仰神明，建築藝術精湛。'},
+    en:{name:'Longshan Temple',deity:'Guanyin Bodhisattva',city:'Taipei',address:'No.211, Guangzhou St., Wanhua Dist.',desc:'Built in 1738, Taipei\'s oldest and most famous temple, blending Buddhism, Taoism, and folk religion with exquisite architecture.'},
+    ja:{name:'龍山寺',deity:'観世音菩薩',city:'台北',address:'台北市万華区広州街211号',desc:'1738年建立。台北最古かつ最有名な寺院で、仏教・道教・民間信仰が融合した精緻な建築が見どころ。'}
+  },
+  { id:4,rank:4,score:93, lat:22.999,lng:120.199, color:'#FFD700', emoji:'⛩️',
+    zh:{name:'台南大天后宮',deity:'媽祖',city:'台南',address:'台南市中西區永福路二段227巷18號',desc:'全台第一座官建媽祖廟，建於1684年，由清廷欽定，地位崇高，為台灣媽祖信仰的重要聖地。'},
+    en:{name:'Tainan Grand Mazu Temple',deity:'Mazu',city:'Tainan',address:'No.18, Ln.227, Sec.2, Yongfu Rd.',desc:"Taiwan's first officially built Mazu temple, established in 1684 by the Qing government."},
+    ja:{name:'台南大天后宮',deity:'媽祖',city:'台南',address:'台南市中西区永福路二段227巷18号',desc:'台湾初の官建媽祖廟。1684年清朝により創建され、高い格式を誇る媽祖信仰の聖地。'}
+  },
+  { id:5,rank:5,score:92, lat:25.063,lng:121.534, color:'#F44336', emoji:'⚔️',
+    zh:{name:'行天宮',deity:'關聖帝君',city:'台北',address:'台北市中山區民權東路二段109號',desc:'俗稱「恩主公廟」，主祀關公，以誠信商業信仰聞名，商人信眾眾多，終年香火不絕。'},
+    en:{name:'Xingtian Temple',deity:'Guan Yu (God of Commerce)',city:'Taipei',address:'No.109, Sec.2, Minquan E. Rd.',desc:'Known as "Enzhugong Temple", dedicated to Guan Yu. Extremely popular among businesspeople seeking integrity and prosperity.'},
+    ja:{name:'行天宮',deity:'関聖帝君（商業の神）',city:'台北',address:'台北市中山区民権東路二段109号',desc:'「恩主公廟」と呼ばれ、関羽を主祀。商売繁盛の神として財界人から篤い信仰を集める。'}
+  },
+  { id:6,rank:6,score:90, lat:24.054,lng:120.432, color:'#FFD700', emoji:'🌊',
+    zh:{name:'鹿港天后宮',deity:'媽祖',city:'彰化',address:'彰化縣鹿港鎮中山路430號',desc:'建於明朝，是台灣最早的媽祖廟之一，保存有珍貴的文物古蹟，為鹿港古鎮的精神核心。'},
+    en:{name:'Lukang Tianhou Temple',deity:'Mazu',city:'Changhua',address:'No.430, Zhongshan Rd., Lukang',desc:'Founded in the Ming Dynasty, one of Taiwan\'s earliest Mazu temples, preserving precious historical artifacts.'},
+    ja:{name:'鹿港天后宮',deity:'媽祖',city:'彰化',address:'彰化県鹿港鎮中山路430号',desc:'明代創建。台湾最古の媽祖廟のひとつで、貴重な文化財を保存し、古鎮・鹿港の精神的中心。'}
+  },
+  { id:7,rank:7,score:89, lat:24.980,lng:121.579, color:'#4CAF50', emoji:'🌿',
+    zh:{name:'指南宮',deity:'呂洞賓',city:'台北',address:'台北市文山區萬壽路115號',desc:'位於木柵山上，主祀純陽祖師呂洞賓，環境清幽，是台北市郊著名的道教聖地。'},
+    en:{name:'Zhinan Temple',deity:'Lü Dongbin (Taoist Immortal)',city:'Taipei',address:'No.115, Wanshou Rd., Wenshan Dist.',desc:'Situated on Muzha mountain, dedicated to the Taoist immortal Lü Dongbin. A serene Taoist sanctuary in Taipei suburbs.'},
+    ja:{name:'指南宮',deity:'呂洞賓（道教の仙人）',city:'台北',address:'台北市文山区万寿路115号',desc:'木柵山の上に位置し、道教の仙人・呂洞賓を主祀。台北郊外の静かな道教聖地。'}
+  },
+  { id:8,rank:8,score:88, lat:25.045,lng:121.578, color:'#9C27B0', emoji:'👑',
+    zh:{name:'松山慈惠堂',deity:'瑤池金母',city:'台北',address:'台北市信義區松山路500號',desc:'主祀瑤池金母（西王母），為台灣瑤池金母信仰的重要廟宇，建築宏偉，香火鼎盛。'},
+    en:{name:'Songshan Cihui Temple',deity:'Queen Mother of the West',city:'Taipei',address:'No.500, Songshan Rd., Xinyi Dist.',desc:"Dedicated to the Queen Mother of the West, one of Taiwan's most important temples for this deity with magnificent architecture."},
+    ja:{name:'松山慈恵堂',deity:'瑶池金母（西王母）',city:'台北',address:'台北市信義区松山路500号',desc:'西王母（瑤池金母）を主祀する台湾随一の廟。壮大な建築と盛んな香火で知られる。'}
+  },
+  { id:9,rank:9,score:87, lat:22.998,lng:120.198, color:'#F44336', emoji:'🐉',
+    zh:{name:'台南祀典武廟',deity:'關聖帝君',city:'台南',address:'台南市中西區永福路二段229號',desc:'建於明鄭時期，台灣規模最大的關帝廟，與赤崁樓相鄰，是台南古城的重要文化象徵。'},
+    en:{name:'Tainan Grand Guan Di Temple',deity:'Guan Yu',city:'Tainan',address:'No.229, Sec.2, Yongfu Rd.',desc:"Taiwan's largest Guan Di Temple, built during the Zheng regime, adjacent to Chihkan Tower."},
+    ja:{name:'台南祀典武廟',deity:'関聖帝君',city:'台南',address:'台南市中西区永福路二段229号',desc:'鄭氏政権期に建立された台湾最大の関帝廟。赤崁楼に隣接し、台南古城の重要文化シンボル。'}
+  },
+  { id:10,rank:10,score:86, lat:24.803,lng:120.968, color:'#2196F3', emoji:'🏙️',
+    zh:{name:'新竹城隍廟',deity:'城隍爺',city:'新竹',address:'新竹市北區中山路75號',desc:'建於1748年，全台最負盛名的城隍廟，廟前小吃美食聞名全台，廟宇建築精美，香客絡繹不絕。'},
+    en:{name:'Hsinchu City God Temple',deity:'Chenghuang (City God)',city:'Hsinchu',address:'No.75, Zhongshan Rd., North Dist.',desc:"Built in 1748, Taiwan's most renowned City God temple. Famous for its surrounding street food and beautiful architecture."},
+    ja:{name:'新竹城隍廟',deity:'城隍爺（城の守護神）',city:'新竹',address:'新竹市北区中山路75号',desc:'1748年建立。台湾最有名な城隍廟。廟前の屋台グルメが全台湾に名を馳せ、参拝者が絶えない。'}
+  },
+  { id:11,rank:11,score:85, lat:24.955,lng:121.225, color:'#9C27B0', emoji:'✨',
+    zh:{name:'中壢慈惠堂',deity:'瑤池金母',city:'桃園',address:'桃園市中壢區民族路196號',desc:'北台灣重要的瑤池金母廟宇，每逢節日信眾雲集，是桃園地區的重要信仰中心。'},
+    en:{name:'Zhongli Cihui Temple',deity:'Queen Mother of the West',city:'Taoyuan',address:'No.196, Minzu Rd., Zhongli Dist.',desc:'An important temple dedicated to the Queen Mother of the West in northern Taiwan, drawing large crowds during festivals.'},
+    ja:{name:'中壢慈恵堂',deity:'瑶池金母',city:'桃園',address:'桃園市中壢区民族路196号',desc:'北台湾の重要な瑤池金母廟。祭日には多くの信者が集まり、桃園地区の信仰の中心となっている。'}
+  },
+  { id:12,rank:12,score:84, lat:24.075,lng:120.539, color:'#FFD700', emoji:'🌸',
+    zh:{name:'彰化南瑤宮',deity:'媽祖',city:'彰化',address:'彰化市南瑤路43號',desc:'建於清乾隆年間，彰化最重要的媽祖廟，轄下有十個「媽祖會」，香火文化傳承悠久。'},
+    en:{name:'Changhua Nanyao Temple',deity:'Mazu',city:'Changhua',address:'No.43, Nanyao Rd., Changhua City',desc:"Built during the Qing Qianlong era, Changhua's most important Mazu temple with ten affiliated Mazu associations."},
+    ja:{name:'彰化南瑶宮',deity:'媽祖',city:'彰化',address:'彰化市南瑤路43号',desc:'清・乾隆年間建立。彰化で最も重要な媽祖廟で、10の「媽祖会」を擁する長い信仰文化を持つ。'}
+  },
+  { id:13,rank:13,score:83, lat:23.267,lng:120.115, color:'#FF9800', emoji:'🔱',
+    zh:{name:'南鯤鯓代天府',deity:'五府千歲',city:'台南',address:'台南市北門區蚵寮里976號',desc:'全台規模最大的王爺廟，主祀五府千歲，廟宇建築宏偉壯麗，每年吸引數百萬香客。'},
+    en:{name:'Nankun Shen Daitian Temple',deity:'Five Princes (Wangye)',city:'Tainan',address:'No.976, Keliao Village, Beimen Dist.',desc:"Taiwan's largest Wangye temple, dedicated to the Five Princes. Its magnificent architecture attracts millions annually."},
+    ja:{name:'南鯤鯓代天府',deity:'五府千歳（王爺）',city:'台南',address:'台南市北門区蚵寮里976号',desc:'台湾最大の王爺廟。五府千歳を主祀し、壮麗な建築に毎年数百万人の参拝者が訪れる。'}
+  },
+  { id:14,rank:14,score:82, lat:24.143,lng:120.703, color:'#FFD700', emoji:'🌺',
+    zh:{name:'台中樂成宮',deity:'媽祖',city:'台中',address:'台中市旱溪街48號',desc:'俗稱「旱溪媽」，創建於清嘉慶年間，每年元宵節的「旱溪媽祖遶境十八庄」活動盛大熱鬧。'},
+    en:{name:'Taichung Lecheng Temple',deity:'Mazu',city:'Taichung',address:'No.48, Hanxi St., Taichung',desc:'Known as "Hanxi Mazu", famous for its Lantern Festival pilgrimage through 18 villages.'},
+    ja:{name:'台中楽成宮',deity:'媽祖',city:'台中',address:'台中市旱渓街48号',desc:'「旱渓媽」として親しまれる。毎年元宵節に行われる「18庄遶境」が盛大で有名。'}
+  },
+  { id:15,rank:15,score:81, lat:23.480,lng:120.449, color:'#2196F3', emoji:'🏛️',
+    zh:{name:'嘉義城隍廟',deity:'城隍爺',city:'嘉義',address:'嘉義市西區吳鳳北路168號',desc:'建於清康熙年間，嘉義重要的城隍廟，廟前市集熱鬧，是嘉義市民信仰與文化生活的核心。'},
+    en:{name:'Chiayi City God Temple',deity:'Chenghuang (City God)',city:'Chiayi',address:'No.168, Wufeng N. Rd., West Dist.',desc:'Built during the Kangxi era, a key City God temple in Chiayi with a vibrant market and rich cultural life.'},
+    ja:{name:'嘉義城隍廟',deity:'城隍爺',city:'嘉義',address:'嘉義市西区呉鳳北路168号',desc:'清・康熙年間建立。廟前の市場が賑わい、嘉義市民の信仰と文化の中心地となっている。'}
+  },
+  { id:16,rank:16,score:80, lat:25.040,lng:121.502, color:'#00BCD4', emoji:'🗿',
+    zh:{name:'萬華清水巖',deity:'清水祖師',city:'台北',address:'台北市萬華區康定路81號',desc:'俗稱「祖師廟」，主祀清水祖師，是萬華地區的重要廟宇，擁有精緻的石雕藝術。'},
+    en:{name:'Wanhua Qingshui Temple',deity:'Qingshui Zushi',city:'Taipei',address:'No.81, Kangding Rd., Wanhua Dist.',desc:'Known as the "Patriarch Temple", featuring exquisite stone carving artistry in Taipei\'s Wanhua district.'},
+    ja:{name:'万華清水巌',deity:'清水祖師',city:'台北',address:'台北市万華区康定路81号',desc:'「祖師廟」として知られ、精緻な石彫芸術で名高い万華地区の重要な廟。'}
+  },
+  { id:17,rank:17,score:79, lat:24.994,lng:121.298, color:'#FFEB3B', emoji:'💰',
+    zh:{name:'桃園景福宮',deity:'土地公',city:'桃園',address:'桃園市桃園區中正路208號',desc:'全台最富有的土地公廟之一，擁有大量黃金裝飾，每逢初一十五信眾絡繹不絕。'},
+    en:{name:'Taoyuan Jingfu Temple',deity:'Tudi Gong (Earth God)',city:'Taoyuan',address:'No.208, Zhongzheng Rd., Taoyuan Dist.',desc:"One of Taiwan's wealthiest Earth God temples, adorned with gold, packed with worshippers on lunar 1st and 15th."},
+    ja:{name:'桃園景福宮',deity:'土地公（大地の神）',city:'桃園',address:'桃園市桃園区中正路208号',desc:'台湾最も豊かな土地公廟のひとつ。金の装飾で知られ、旧暦1日・15日には参拝者が絶えない。'}
+  },
+  { id:18,rank:18,score:78, lat:22.627,lng:120.357, color:'#2196F3', emoji:'🌆',
+    zh:{name:'鳳山城隍廟',deity:'城隍爺',city:'高雄',address:'高雄市鳳山區城隍街1號',desc:'清朝建立的古廟，是高雄鳳山地區最重要的城隍廟，也是南台灣城隍信仰的重要中心。'},
+    en:{name:'Fongshan City God Temple',deity:'Chenghuang (City God)',city:'Kaohsiung',address:'No.1, Chenghuang St., Fongshan Dist.',desc:'A Qing Dynasty temple and the most important City God temple in Fongshan, a key center of southern Taiwan faith.'},
+    ja:{name:'鳳山城隍廟',deity:'城隍爺',city:'高雄',address:'高雄市鳳山区城隍街1号',desc:'清代建立の古廟。南台湾の城隍信仰の重要拠点として高雄・鳳山地区の信仰を支える。'}
+  },
+  { id:19,rank:19,score:77, lat:23.564,lng:119.567, color:'#FFD700', emoji:'🌅',
+    zh:{name:'澎湖天后宮',deity:'媽祖',city:'澎湖',address:'澎湖縣馬公市中正路1號',desc:'建於1604年，是全台灣現存最古老的廟宇，被列為一級古蹟，見證了台灣四百年的歷史。'},
+    en:{name:'Penghu Tianhou Temple',deity:'Mazu',city:'Penghu',address:'No.1, Zhongzheng Rd., Magong City',desc:"Built in 1604, Taiwan's oldest existing temple, a First-Class Historic Monument witnessing 400 years of history."},
+    ja:{name:'澎湖天后宮',deity:'媽祖',city:'澎湖',address:'澎湖県馬公市中正路1号',desc:'1604年建立、台湾現存最古の廟。一級史跡に指定され、400年の歴史を見届けてきた聖地。'}
+  },
+  { id:20,rank:20,score:76, lat:23.955,lng:121.546, color:'#8BC34A', emoji:'🍃',
+    zh:{name:'花蓮慶修院',deity:'弘法大師',city:'花蓮',address:'花蓮縣吉安鄉中興路345-1號',desc:'建於日治時代的日式佛寺，保存完整的日本真言宗建築風格，現為三級古蹟，見證台日文化交流。'},
+    en:{name:'Hualien Qingxiu Temple',deity:'Kobo Daishi (Kukai)',city:'Hualien',address:'No.345-1, Zhongxing Rd., Jian Township',desc:'A Japanese-era Buddhist temple preserving authentic Shingon-sect architecture. A Third-Class Historic Monument.'},
+    ja:{name:'花蓮慶修院',deity:'弘法大師（空海）',city:'花蓮',address:'花蓮県吉安郷中興路345-1号',desc:'日本統治時代に建てられた真言宗寺院。完全な形で保存された建築は台日文化交流の証。'}
+  }
+];
+
+// FESTIVAL DATA
+const FESTIVALS = [
+  { month:1, day:15, templeId:14, zh:{name:'旱溪媽祖遶境十八庄',desc:'元宵節前後，媽祖出巡十八個庄頭，是台中最盛大的民俗活動。'}, en:{name:'Hanxi Mazu Pilgrimage',desc:'Around Lantern Festival, Mazu parades through 18 villages in the most celebrated folk event in Taichung.'}, ja:{name:'旱渓媽祖遶境十八庄',desc:'元宵節前後に媽祖が18の集落を巡行する台中最大の民俗行事。'} },
+  { month:3, day:23, templeId:1, zh:{name:'大甲媽祖遶境進香',desc:'每年農曆三月媽祖聖誕前後，長達九天八夜、逾三百公里的遶境活動，被列為世界三大宗教活動之一。'}, en:{name:'Dajia Mazu Pilgrimage',desc:"A 9-day, 300km pilgrimage around Mazu's birthday, listed as one of the world's top three religious events."}, ja:{name:'大甲媽祖遶境進香',desc:'媽祖誕生日前後、9日間・300kmにわたる巡礼。世界三大宗教行事のひとつに数えられる。'} },
+  { month:4, day:5, templeId:3, zh:{name:'清明節祭祖',desc:'龍山寺清明節祭典，信眾齊聚祭拜祖先，場面莊嚴肅穆。'}, en:{name:'Qingming Ancestral Rites',desc:'Longshan Temple holds solemn ancestral worship ceremonies during the Tomb Sweeping Festival.'}, ja:{name:'清明節の先祖祭り',desc:'龍山寺の清明節（墓参り）祭典。信者が集まり、厳かな雰囲気で先祖を祀る。'} },
+  { month:5, day:1, templeId:13, zh:{name:'南鯤鯓萬善爺祭',desc:'每年五月舉辦的王爺祭典，鑼鼓喧天，熱鬧非凡，是西南沿海最重要的廟會之一。'}, en:{name:'Nankun Shen Wangye Festival',desc:'Annual Wangye (Prince) festival in May with drums, gongs and vibrant celebrations along the southwest coast.'}, ja:{name:'南鯤鯓王爺祭',desc:'毎年5月に開催される王爺祭典。太鼓と鑼が鳴り響く南西沿岸最大の廟会のひとつ。'} },
+  { month:6, day:5, templeId:5, zh:{name:'行天宮端午祈福',desc:'端午節前後，行天宮舉辦特別祈福法會，商業信眾齊聚祈求事業順利。'}, en:{name:'Xingtian Dragon Boat Blessing',desc:"Around Dragon Boat Festival, Xingtian Temple holds special blessing ceremonies for business success."}, ja:{name:'行天宮端午祈願',desc:'端午節前後に行天宮で行われる祈願法会。商売繁盛を願う財界人が多数参拝する。'} },
+  { month:7, day:15, templeId:9, zh:{name:'台南中元祭',desc:'農曆七月中元節，台南各大廟宇舉辦普度儀式，祀典武廟的中元祭尤為盛大。'}, en:{name:'Tainan Ghost Festival',desc:"Ghost Month ceremonies at Tainan's temples, with the Guan Di Temple's Zhongyuan Festival being particularly grand."}, ja:{name:'台南の中元祭（お盆）',desc:'旧暦7月の中元節。台南各廟で普度儀式が行われ、祀典武廟の中元祭は特に盛大。'} },
+  { month:8, day:15, templeId:2, zh:{name:'北港媽祖中秋祭',desc:'中秋節前後，北港朝天宮舉辦盛大的中秋祈福活動，月光下點燃千盞燈籠，景象壯觀。'}, en:{name:'Beigang Mazu Mid-Autumn Festival',desc:"Around Mid-Autumn Festival, Beigang Chaotian Temple lights thousands of lanterns under the moonlight."}, ja:{name:'北港媽祖の中秋祭',desc:'中秋節前後、北港朝天宮で盛大な中秋祈願が行われる。月明かりのもと千の提灯が灯される。'} },
+  { month:10, day:20, templeId:7, zh:{name:'指南宮重陽登高祭',desc:'重陽節（農曆九月九日）前後，信眾登木柵山朝拜呂洞賓，兼具登高祈福之意。'}, en:{name:'Zhinan Temple Double Nine Pilgrimage',desc:"Around Double Nine Festival, pilgrims climb Muzha mountain to worship Lü Dongbin, combining hiking and blessing."}, ja:{name:'指南宮の重陽節登山祭',desc:'重陽節（旧暦9月9日）前後、信者が木柵山に登り呂洞賓を参拝。登山と祈願を兼ねた行事。'} },
+  { month:11, day:10, templeId:19, zh:{name:'澎湖媽祖文化節',desc:'每年秋冬季節，澎湖舉辦媽祖文化節，結合傳統祭典與觀光活動，展現離島獨特文化魅力。'}, en:{name:'Penghu Mazu Culture Festival',desc:'Each autumn, Penghu hosts a Mazu Culture Festival blending traditional ceremonies with tourism, showcasing island culture.'}, ja:{name:'澎湖媽祖文化節',desc:'毎年秋冬に澎湖で開催。伝統祭典と観光が融合した離島独自の文化フェスティバル。'} },
+  { month:12, day:31, templeId:3, zh:{name:'龍山寺跨年祈福',desc:'每年跨年夜，龍山寺擠滿祈求新年好運的信眾，鐘聲響起的瞬間，香火最為鼎盛。'}, en:{name:'Longshan Temple New Year Blessing',desc:"On New Year's Eve, Longshan Temple fills with worshippers seeking fortune for the year ahead as bells ring at midnight."}, ja:{name:'龍山寺の年越し祈願',desc:'大晦日には龍山寺に参拝者が殺到。鐘が鳴る瞬間、新年の幸運を祈る香火が最高潮に達する。'} }
+];
+
+// ═══════════════════════════════════════════════════
+// LANG
+// ═══════════════════════════════════════════════════
+let lang = 'zh';
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === ({zh:'繁中',en:'EN',ja:'日本語'}[l]));
+  });
+  document.querySelectorAll('[data-zh]').forEach(el => { el.textContent = el.getAttribute('data-'+l); });
+  buildRankList();
+  buildCalendar();
+  buildStampGrid();
+  if (activeTemple) showCard(activeTemple);
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL SWITCH
+// ═══════════════════════════════════════════════════
+function switchPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// RANK LIST
+// ═══════════════════════════════════════════════════
+function buildRankList() {
+  const list = document.getElementById('rankList');
+  list.innerHTML = '';
+  TEMPLES.forEach(t => {
+    const d = t[lang];
+    const numClass = t.rank<=3 ? ['top1','top2','top3'][t.rank-1] : 'other';
+    const medal = t.rank<=3 ? ['🥇','🥈','🥉'][t.rank-1] : t.rank;
+    const div = document.createElement('div');
+    div.className = 'rank-item' + (activeTemple?.id===t.id?' active':'');
+    div.innerHTML = `<div class="rank-num ${numClass}">${medal}</div>
+      <div class="rank-info">
+        <div class="rank-name">${d.name}</div>
+        <div class="rank-deity">${d.deity} · ${d.city}</div>
+      </div>
+      <div class="ibar-wrap">
+        <div class="ibar" style="width:${t.score}%"></div>
+        <div class="iscore">${t.score}</div>
+      </div>`;
+    div.onclick = () => focusTemple(t);
+    list.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════════
+let calMonth = new Date().getMonth() + 1;
+const MONTH_NAMES = {
+  zh:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+  en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  ja:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+};
+
+function calPrev() { calMonth = calMonth<=1 ? 12 : calMonth-1; buildCalendar(); }
+function calNext() { calMonth = calMonth>=12 ? 1 : calMonth+1; buildCalendar(); }
+
+function buildCalendar() {
+  document.getElementById('calMonthLabel').textContent = MONTH_NAMES[lang][calMonth-1];
+  const list = document.getElementById('calList');
+  list.innerHTML = '';
+  const events = FESTIVALS.filter(f => f.month === calMonth);
+  if (events.length === 0) {
+    const empty = { zh:'本月無重大廟會活動', en:'No major festivals this month', ja:'今月は主要な祭りはありません' };
+    list.innerHTML = `<div class="cal-empty">${empty[lang]}</div>`;
+    return;
+  }
+  events.sort((a,b)=>a.day-b.day).forEach(f => {
+    const d = f[lang];
+    const temple = TEMPLES.find(t=>t.id===f.templeId);
+    const tname = temple ? temple[lang].name : '';
+    const dateLabel = {zh:`農曆 ${f.month}/${f.day}`, en:`Lunar ${f.month}/${f.day}`, ja:`旧暦 ${f.month}/${f.day}`}[lang];
+    const div = document.createElement('div');
+    div.className = 'cal-item';
+    div.innerHTML = `<div class="cal-date">${dateLabel}</div>
+      <div class="cal-event-name">${d.name}</div>
+      <div class="cal-temple-ref">📍 ${tname}</div>`;
+    div.onclick = () => { if(temple) { focusTemple(temple); switchPanel('rank', document.getElementById('navRank')); } };
+    list.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// STAMPS
+// ═══════════════════════════════════════════════════
+let collected = JSON.parse(localStorage.getItem('templeStamps') || '[]');
+
+function saveStamps() {
+  try { localStorage.setItem('templeStamps', JSON.stringify(collected)); } catch(e) {}
+}
+
+function buildStampGrid() {
+  const grid = document.getElementById('stampGrid');
+  grid.innerHTML = '';
+  const total = TEMPLES.length;
+  const got = collected.length;
+
+  const prog = { zh:`已集 ${got} / ${total} 枚`, en:`${got} / ${total} collected`, ja:`${got} / ${total} 枚収集済み` };
+  document.getElementById('stampProgress').textContent = prog[lang];
+  document.getElementById('stampProgFill').style.width = (got/total*100) + '%';
+
+  TEMPLES.forEach(t => {
+    const isCollected = collected.includes(t.id);
+    const d = t[lang];
+    const cell = document.createElement('div');
+    cell.className = 'stamp-cell' + (isCollected?' collected':'');
+    cell.title = d.name;
+    cell.innerHTML = `<span class="stamp-num">#${t.rank}</span>
+      <span class="stamp-emoji">${isCollected ? t.emoji : '❓'}</span>
+      <span style="font-size:.55rem;text-align:center;line-height:1.2;max-width:100%;overflow:hidden">${isCollected ? d.name.slice(0,4) : '???'}</span>`;
+    cell.onclick = () => { focusTemple(t); switchPanel('rank', document.getElementById('navRank')); };
+    grid.appendChild(cell);
+  });
+}
+
+function collectStamp() {
+  if (!activeTemple) return;
+  if (collected.includes(activeTemple.id)) return;
+  collected.push(activeTemple.id);
+  saveStamps();
+  buildStampGrid();
+  showCard(activeTemple);
+  showStampFlash(activeTemple);
+}
+
+function showStampFlash(t) {
+  const d = t[lang];
+  const titles = { zh:`🎉 獲得印章！`, en:`🎉 Stamp Collected!`, ja:`🎉 スタンプ獲得！` };
+  const subs = { zh:`${d.name} 已加入你的集章冊`, en:`${d.name} added to your collection`, ja:`${d.name} がスタンプ帳に追加されました` };
+  document.getElementById('flashEmoji').textContent = t.emoji;
+  document.getElementById('flashTitle').textContent = titles[lang];
+  document.getElementById('flashSub').textContent = subs[lang];
+  const f = document.getElementById('stampFlash');
+  f.classList.add('show');
+  setTimeout(()=>f.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════════
+// INFO CARD
+// ═══════════════════════════════════════════════════
+let activeTemple = null;
+
+function showCard(t) {
+  const d = t[lang];
+  const rankLabels = {zh:`香火排行 #${t.rank}`,en:`Incense Rank #${t.rank}`,ja:`香火ランキング #${t.rank}`};
+  document.getElementById('cardRank').textContent = rankLabels[lang];
+  document.getElementById('cardName').textContent = d.name;
+  document.getElementById('cardDeity').textContent = `🙏 ${d.deity}`;
+  document.getElementById('cardDesc').textContent = d.desc;
+  const addrL={zh:'地址',en:'Address',ja:'住所'};
+  const cityL={zh:'縣市',en:'City',ja:'都市'};
+  const scoreL={zh:'香火指數',en:'Score',ja:'香火指数'};
+  document.getElementById('cardMeta').innerHTML = `
+    <div class="meta-item"><div class="meta-label">${cityL[lang]}</div><div class="meta-value">${d.city}</div></div>
+    <div class="meta-item"><div class="meta-label">${scoreL[lang]}</div><div class="meta-value">${t.score}/100</div></div>
+    <div class="meta-item" style="grid-column:1/-1"><div class="meta-label">${addrL[lang]}</div><div class="meta-value">${d.address}</div></div>`;
+  document.getElementById('incenseFill').style.width = t.score+'%';
+  document.getElementById('incenseScore').textContent = t.score+'/100';
+
+  const isCollected = collected.includes(t.id);
+  const stampTexts = {
+    zh: isCollected ? '✅ 已收集印章' : '點擊下方收集此廟印章',
+    en: isCollected ? '✅ Stamp collected' : 'Click below to collect this temple\'s stamp',
+    ja: isCollected ? '✅ スタンプ収集済み' : '下のボタンでスタンプを収集'
+  };
+  const btnTexts = {
+    zh: isCollected ? '已收集' : `收集 ${t.emoji} 印章`,
+    en: isCollected ? 'Collected' : `Collect ${t.emoji} Stamp`,
+    ja: isCollected ? '収集済み' : `${t.emoji} スタンプを収集`
+  };
+  document.getElementById('cardStampIcon').textContent = t.emoji;
+  document.getElementById('cardStampText').textContent = stampTexts[lang];
+  const btn = document.getElementById('cardStampBtn');
+  btn.textContent = btnTexts[lang];
+  btn.className = 'card-stamp-btn' + (isCollected?' collected':'');
+
+  document.getElementById('infoCard').classList.add('visible');
+}
+
+function closeCard() {
+  document.getElementById('infoCard').classList.remove('visible');
+  activeTemple = null;
+  buildRankList();
+}
+
+// ═══════════════════════════════════════════════════
+// THREE.JS
+// ═══════════════════════════════════════════════════
+const canvas = document.getElementById('mapCanvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45,1,0.1,1000);
+camera.position.set(0,2.5,5);
+camera.lookAt(0,0,0);
+
+scene.add(new THREE.AmbientLight(0xffeedd,0.6));
+const dirLight = new THREE.DirectionalLight(0xffd080,1.2);
+dirLight.position.set(3,5,3); scene.add(dirLight);
+const fillLight = new THREE.DirectionalLight(0x4040ff,0.2);
+fillLight.position.set(-3,-1,-2); scene.add(fillLight);
+
+const LAT_MIN=21.85,LAT_MAX=25.35,LNG_MIN=119.9,LNG_MAX=122.05;
+const MAP_W=1.6,MAP_H=2.2;
+
+function geoToXY(lat,lng) {
+  return { x:((lng-LNG_MIN)/(LNG_MAX-LNG_MIN)-0.5)*MAP_W, y:((lat-LAT_MIN)/(LAT_MAX-LAT_MIN)-0.5)*MAP_H };
+}
+
+const twOutline = [
+  // North coast
+  [25.30,121.50],[25.28,121.65],[25.22,121.78],[25.10,121.90],[24.97,121.97],
+  [24.83,121.99],[24.68,121.95],[24.50,121.90],[24.30,121.88],
+  // East coast going south
+  [24.10,121.75],[23.90,121.65],[23.65,121.55],[23.40,121.50],[23.15,121.40],
+  [22.90,121.25],[22.65,121.10],[22.42,120.95],[22.20,120.85],
+  // South tip
+  [22.00,120.75],[21.92,120.72],[21.90,120.65],[21.95,120.55],
+  // West coast going north
+  [22.05,120.50],[22.20,120.42],[22.40,120.33],[22.60,120.25],
+  [22.80,120.20],[23.00,120.10],[23.15,120.05],[23.30,120.00],
+  [23.50,119.95],[23.65,119.90],[23.80,119.93],[23.95,120.10],
+  [24.10,120.20],[24.25,120.35],[24.40,120.50],[24.55,120.62],
+  [24.70,120.72],[24.85,120.85],[25.00,120.95],[25.12,121.10],
+  [25.22,121.25],[25.29,121.38],[25.30,121.50]
+];
+
+const shape = new THREE.Shape();
+twOutline.forEach(([lat,lng],i)=>{
+  const {x,y}=geoToXY(lat,lng);
+  i===0?shape.moveTo(x,y):shape.lineTo(x,y);
+});
+shape.closePath();
+
+const islandGeo = new THREE.ExtrudeGeometry(shape,{depth:.12,bevelEnabled:true,bevelThickness:.015,bevelSize:.01,bevelSegments:2});
+islandGeo.rotateX(-Math.PI/2);
+const island = new THREE.Mesh(islandGeo, new THREE.MeshPhongMaterial({color:0x2D1200,emissive:0x1a0800,specular:0x442200,shininess:30}));
+island.position.y=-0.06; scene.add(island);
+
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(islandGeo,15), new THREE.LineBasicMaterial({color:0xD4A017,transparent:true,opacity:.6}));
+edges.position.y=-0.06; scene.add(edges);
+
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(6,6), new THREE.MeshBasicMaterial({color:0x0a0400,transparent:true,opacity:.95}));
+plane.rotation.x=-Math.PI/2; plane.position.y=-0.08; scene.add(plane);
+
+const templeObjs=[];
+function templeWorldPos(t){ const{x,y}=geoToXY(t.lat,t.lng); return new THREE.Vector3(x,.12,-y); }
+
+TEMPLES.forEach(t=>{
+  const pos=templeWorldPos(t);
+  const col=new THREE.Color(t.color);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(.07,10,10),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.35}));
+  glow.position.copy(pos); glow.position.y+=.02; scene.add(glow);
+  const pin=new THREE.Mesh(new THREE.SphereGeometry(.04,10,10),new THREE.MeshBasicMaterial({color:col}));
+  pin.position.copy(pos); pin.position.y+=.02; pin.userData=t; scene.add(pin); templeObjs.push(pin);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(.05,.06,20),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.5,side:THREE.DoubleSide}));
+  ring.rotation.x=-Math.PI/2; ring.position.copy(pos); ring.position.y+=.001;
+  ring.userData={phase:Math.random()*Math.PI*2}; scene.add(ring);
+  pin.userData.ringMesh=ring;
+});
+
+// Controls
+let isDragging=false,prevMouse={x:0,y:0};
+let theta=0,phi=0.6,radius=5;
+const camTarget=new THREE.Vector3(0,0,0);
+
+function updateCamera(){
+  camera.position.x=camTarget.x+radius*Math.sin(phi)*Math.sin(theta);
+  camera.position.y=camTarget.y+radius*Math.cos(phi);
+  camera.position.z=camTarget.z+radius*Math.sin(phi)*Math.cos(theta);
+  camera.lookAt(camTarget);
+}
+
+canvas.addEventListener('mousedown',e=>{isDragging=true;prevMouse={x:e.clientX,y:e.clientY};});
+canvas.addEventListener('mousemove',e=>{
+  if(!isDragging)return;
+  theta-=(e.clientX-prevMouse.x)*0.005;
+  phi=Math.max(.2,Math.min(Math.PI/2.2,phi+(e.clientY-prevMouse.y)*0.005));
+  prevMouse={x:e.clientX,y:e.clientY}; updateCamera();
+});
+window.addEventListener('mouseup',()=>isDragging=false);
+canvas.addEventListener('wheel',e=>{radius=Math.max(2.5,Math.min(9,radius+e.deltaY*.005));updateCamera();e.preventDefault();},{passive:false});
+
+let lastTouch=null,touchDist2=null;
+canvas.addEventListener('touchstart',e=>{
+  if(e.touches.length===1)lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY};
+  if(e.touches.length===2)touchDist2=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+},{passive:true});
+canvas.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&lastTouch){
+    theta-=(e.touches[0].clientX-lastTouch.x)*.007;
+    phi=Math.max(.2,Math.min(Math.PI/2.2,phi+(e.touches[0].clientY-lastTouch.y)*.007));
+    lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; updateCamera();
+  }
+  if(e.touches.length===2&&touchDist2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    radius=Math.max(2.5,Math.min(9,radius*(touchDist2/d)));touchDist2=d;updateCamera();
+  }
+  e.preventDefault();
+},{passive:false});
+canvas.addEventListener('touchend',()=>{lastTouch=null;touchDist2=null;});
+
+// Camera anim
+let camAnim=null;
+function animateCameraTo(worldPos){
+  const st=theta,sp=phi,sr=radius;
+  const et=Math.atan2(worldPos.x,worldPos.z)+0.3,ep=0.55,er=3.5;
+  let t2=0;
+  camAnim=()=>{
+    t2=Math.min(1,t2+.03);
+    const e=t2<.5?2*t2*t2:-1+(4-2*t2)*t2;
+    theta=st+(et-st)*e; phi=sp+(ep-sp)*e; radius=sr+(er-sr)*e; updateCamera();
+    if(t2>=1)camAnim=null;
+  };
+}
+
+function focusTemple(t){
+  activeTemple=t;
+  showCard(t);
+  buildRankList();
+  animateCameraTo(templeWorldPos(t));
+  // Scroll rank list to active item
+  setTimeout(()=>{
+    const items = document.querySelectorAll('.rank-item');
+    if(items[t.rank-1]) items[t.rank-1].scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 100);
+  // Switch to rank panel to show highlight
+  switchPanel('rank', document.getElementById('navRank'));
+}
+
+// Raycasting
+const raycaster=new THREE.Raycaster();
+raycaster.params.Points = { threshold: 0.05 };
+const mouse2=new THREE.Vector2();
+let mouseDownTime=0;
+canvas.addEventListener('mousedown',()=>mouseDownTime=Date.now());
+canvas.addEventListener('mouseup',e=>{
+  if(Date.now()-mouseDownTime>200)return;
+  const rect=canvas.getBoundingClientRect();
+  mouse2.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouse2.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse2,camera);
+  const hits=raycaster.intersectObjects(templeObjs);
+  if(hits.length>0)focusTemple(hits[0].object.userData);
+});
+canvas.addEventListener('mousemove',e=>{
+  if(isDragging)return;
+  const rect=canvas.getBoundingClientRect();
+  mouse2.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouse2.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse2,camera);
+  canvas.style.cursor=raycaster.intersectObjects(templeObjs).length>0?'pointer':'grab';
+});
+
+// Particles
+const pc=document.getElementById('particles');
+for(let i=0;i<18;i++){
+  const p=document.createElement('div');
+  p.className='particle';
+  const dx=(Math.random()-.5)*30;
+  p.style.cssText=`left:${30+Math.random()*40}%;bottom:0;--dx:${dx}px;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*4}s`;
+  pc.appendChild(p);
+}
+
+// Resize
+function onResize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+new ResizeObserver(onResize).observe(canvas); onResize();
+
+// Animate
+let clock=0;
+function animate(){
+  requestAnimationFrame(animate); clock+=.016;
+  if(camAnim)camAnim();
+  templeObjs.forEach(pin=>{
+    const ring=pin.userData.ringMesh; if(!ring)return;
+    const s=1+.4*Math.sin(clock*2+ring.userData.phase);
+    ring.scale.setScalar(s);
+    ring.material.opacity=.5-.3*Math.sin(clock*2+ring.userData.phase);
+    const isActive=activeTemple&&pin.userData.id===activeTemple.id;
+    pin.material.color.set(isActive?'#ffffff':pin.userData.color);
+  });
+  island.position.y=-0.06+Math.sin(clock*.5)*.003;
+  edges.position.y=island.position.y;
+  renderer.render(scene,camera);
+}
+
+updateCamera(); buildRankList(); buildCalendar(); buildStampGrid(); animate();
+
+// ═══════════════════════════════════════════════════
+// TDX API INTEGRATION
+// ═══════════════════════════════════════════════════
+const TDX_CLIENT_ID     = 'j9341471-83b30e8e-6903-406f';
+const TDX_CLIENT_SECRET = '3de8b635-6de6-4ce0-b03d-538d181dec1c';
+const TDX_TOKEN_URL     = 'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token';
+const TDX_BASE          = 'https://tdx.transportdata.tw/api/basic/v2';
+
+let tdxToken = null;
+
+// Status bar in map area
+const statusBar = document.createElement('div');
+statusBar.style.cssText = `position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  background:rgba(26,10,0,.85);border:1px solid rgba(212,160,23,.4);border-radius:3px;
+  padding:5px 14px;font-size:.72rem;color:rgba(212,160,23,.8);z-index:10;
+  display:none;letter-spacing:.05em;`;
+document.querySelector('.map-area').appendChild(statusBar);
+
+function showStatus(msg, autoHide=true) {
+  statusBar.textContent = msg;
+  statusBar.style.display = 'block';
+  if (autoHide) setTimeout(()=>statusBar.style.display='none', 3000);
+}
+
+// 1. Get TDX access token
+async function getTDXToken() {
+  try {
+    showStatus('🔑 正在取得 TDX 授權...', false);
+    const resp = await fetch(TDX_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type:    'client_credentials',
+        client_id:     TDX_CLIENT_ID,
+        client_secret: TDX_CLIENT_SECRET
+      })
+    });
+    if (!resp.ok) throw new Error('Token request failed: ' + resp.status);
+    const data = await resp.json();
+    tdxToken = data.access_token;
+    showStatus('✅ TDX 連線成功！載入觀光資料中...', false);
+    return tdxToken;
+  } catch(e) {
+    showStatus('⚠️ TDX 連線失敗，使用內建資料');
+    console.warn('TDX token error:', e);
+    return null;
+  }
+}
+
+// 2. Fetch scenic spots (temples) from TDX
+async function fetchTDXTemples() {
+  if (!tdxToken) return;
+  try {
+    // Filter for temple-related scenic spots in Taiwan
+    const filter = encodeURIComponent("contains(ScenicSpotName,'宮') or contains(ScenicSpotName,'廟') or contains(ScenicSpotName,'寺') or contains(ScenicSpotName,'堂')");
+    const url = `${TDX_BASE}/Tourism/ScenicSpot?$filter=${filter}&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$top=50&$format=JSON`;
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${tdxToken}` }
+    });
+    if (!resp.ok) throw new Error('Scenic spots request failed: ' + resp.status);
+    const data = await resp.json();
+
+    // Match TDX results to our temple list by name similarity
+    let enriched = 0;
+    data.forEach(spot => {
+      const match = TEMPLES.find(t =>
+        spot.ScenicSpotName && (
+          t.zh.name.includes(spot.ScenicSpotName.slice(0,4)) ||
+          spot.ScenicSpotName.includes(t.zh.name.slice(0,4))
+        )
+      );
+      if (match) {
+        // Enrich with TDX data
+        if (spot.Picture?.PictureUrl1) match.tdxPhoto = spot.Picture.PictureUrl1;
+        if (spot.Description && spot.Description.length > 10) {
+          match.zh.descTDX = spot.Description.slice(0, 120) + '...';
+        }
+        if (spot.Position?.PositionLat) match.lat = spot.Position.PositionLat;
+        if (spot.Position?.PositionLon) match.lng = spot.Position.PositionLon;
+        enriched++;
+      }
+    });
+
+    showStatus(`✅ TDX 景點資料載入完成（${enriched} 間廟宇已更新）`);
+    if (activeTemple) showCard(activeTemple); // refresh open card
+  } catch(e) {
+    showStatus('⚠️ 景點資料載入失敗，使用內建資料');
+    console.warn('TDX scenic spots error:', e);
+  }
+}
+
+// 3. Fetch live activity/festival data from TDX
+async function fetchTDXActivities() {
+  if (!tdxToken) return;
+  try {
+    const filter = encodeURIComponent("contains(ActivityName,'媽祖') or contains(ActivityName,'廟會') or contains(ActivityName,'遶境') or contains(ActivityName,'祭典') or contains(ActivityName,'祈福')");
+    const url = `${TDX_BASE}/Tourism/Activity?$filter=${filter}&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$top=20&$orderby=StartTime desc&$format=JSON`;
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${tdxToken}` }
+    });
+    if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
+    const data = await resp.json();
+
+    if (data.length > 0) {
+      // Add TDX live activities to calendar display
+      window.tdxActivities = data;
+      buildCalendar(); // rebuild with live data
+      showStatus(`📅 即時廟會活動已更新（${data.length} 筆）`);
+    }
+  } catch(e) {
+    console.warn('TDX activities error:', e);
+  }
+}
+
+// 4. Enrich info card with TDX photo
+const origShowCard = showCard;
+window.showCard = function(t) {
+  origShowCard(t);
+  // Inject TDX photo if available
+  const existing = document.getElementById('tdxPhotoArea');
+  if (existing) existing.remove();
+  if (t.tdxPhoto) {
+    const photoDiv = document.createElement('div');
+    photoDiv.id = 'tdxPhotoArea';
+    photoDiv.style.cssText = 'margin-top:10px;border-radius:3px;overflow:hidden;border:1px solid rgba(212,160,23,.25);';
+    photoDiv.innerHTML = `
+      <img src="${t.tdxPhoto}" alt="${t.zh.name}"
+        style="width:100%;height:110px;object-fit:cover;display:block;"
+        onerror="this.parentElement.remove()">
+      <div style="font-size:.6rem;color:rgba(212,160,23,.4);padding:3px 6px;">📸 圖片來源：TDX 觀光署</div>`;
+    document.getElementById('infoCard').appendChild(photoDiv);
+  }
+  // Show TDX-enriched description if available
+  if (t.zh.descTDX && lang === 'zh') {
+    const desc = document.getElementById('cardDesc');
+    if (desc) desc.title = t.zh.descTDX;
+  }
+};
+
+// 5. Enrich calendar with TDX live activities
+const origBuildCal = buildCalendar;
+window.buildCalendar = function() {
+  origBuildCal();
+  if (!window.tdxActivities || !window.tdxActivities.length) return;
+  const list = document.getElementById('calList');
+
+  // Add a separator
+  const sep = document.createElement('div');
+  sep.style.cssText = 'padding:6px 14px;font-size:.65rem;color:var(--ember);letter-spacing:.08em;border-top:1px solid rgba(212,160,23,.15);margin-top:4px;';
+  sep.textContent = { zh:'🔴 即時活動（TDX 觀光署）', en:'🔴 Live Events (TDX)', ja:'🔴 リアルタイムイベント（TDX）' }[lang] || '🔴 即時活動';
+  list.appendChild(sep);
+
+  window.tdxActivities.slice(0, 6).forEach(act => {
+    const start = act.StartTime ? new Date(act.StartTime) : null;
+    const dateStr = start ? `${start.getFullYear()}/${start.getMonth()+1}/${start.getDate()}` : '';
+    const div = document.createElement('div');
+    div.className = 'cal-item';
+    div.style.borderLeftColor = '#E85D04';
+    div.innerHTML = `
+      <div class="cal-date" style="color:#E85D04">${dateStr} ${act.City||''}</div>
+      <div class="cal-event-name">${act.ActivityName||''}</div>
+      <div class="cal-temple-ref">📍 ${act.Location||''}</div>`;
+    list.appendChild(div);
+  });
+};
+
+// Init TDX on load
+(async () => {
+  await getTDXToken();
+  if (tdxToken) {
+    await fetchTDXTemples();
+    await fetchTDXActivities();
+  }
+})();
+</script>
+</body>
+</html>
