@@ -971,8 +971,7 @@ async function fetchTDXTemples() {
   if (!tdxToken) return;
   try {
     // Filter for temple-related scenic spots in Taiwan
-    const filter = encodeURIComponent("contains(ScenicSpotName,'宮') or contains(ScenicSpotName,'廟') or contains(ScenicSpotName,'寺') or contains(ScenicSpotName,'堂')");
-    const rawUrl = `https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot?$filter=${filter}&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$top=50&$format=JSON`;
+    const rawUrl = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot?$top=30&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON';
     const url = PROXY + '?url=' + encodeURIComponent(rawUrl);
 
     const resp = await fetch(url, {
@@ -1014,8 +1013,7 @@ async function fetchTDXTemples() {
 async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
-    const filter = encodeURIComponent("contains(ActivityName,'媽祖') or contains(ActivityName,'廟會') or contains(ActivityName,'遶境') or contains(ActivityName,'祭典') or contains(ActivityName,'祈福')");
-    const rawUrl2 = `https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity?$filter=${filter}&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$top=20&$orderby=StartTime desc&$format=JSON`;
+    const rawUrl2 = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
     const url = PROXY + '?url=' + encodeURIComponent(rawUrl2);
 
     const resp = await fetch(url, {
