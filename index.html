@@ -968,7 +968,7 @@ async function fetchTDXTemples() {
     let allSpots = [];
     for (const city of cities) {
       try {
-        const rawUrl = `https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot/${city}?$top=20&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON`;
+        const rawUrl = `https://tdx.transportdata.tw/api/tourism/v2/Tourism/ScenicSpot/${city}?$top=20&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON`;
         const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
         const r = await fetch(urlWithToken);
         if (r.ok) {
@@ -1013,7 +1013,7 @@ async function fetchTDXTemples() {
 async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
-    const rawUrl2 = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity/Taipei?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
+    const rawUrl2 = 'https://tdx.transportdata.tw/api/tourism/v2/Tourism/Activity/Taipei?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
     const urlWithToken2 = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl2) + '&token=' + encodeURIComponent(tdxToken);
     const resp = await fetch(urlWithToken2);
     if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
