@@ -964,21 +964,12 @@ async function fetchTDXTemples() {
   try {
     // Filter for temple-related scenic spots in Taiwan
     // Fetch temples from multiple cities
-    const cities = ['Taipei','Taichung','Tainan','Kaohsiung','Changhua','Yunlin','Taoyuan'];
-    let allSpots = [];
-    for (const city of cities) {
-      try {
-        const rawUrl = `https://tdx.transportdata.tw/api/tourism/v2/Tourism/ScenicSpot/${city}?$top=20&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON`;
-        const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
-        const r = await fetch(urlWithToken);
-        if (r.ok) {
-          const d = await r.json();
-          allSpots = allSpots.concat(d);
-        }
-      } catch(e) {}
-    }
-    const data = allSpots;
-    if (!data.length) throw new Error('No scenic spots found');
+    const rawUrl = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction?$top=30&$select=ScenicSpotID,Name,Description,Address,City,Picture,Position&$format=json';
+    const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
+    const resp2 = await fetch(urlWithToken);
+    if (!resp2.ok) throw new Error('Scenic spots request failed: ' + resp2.status);
+    const json2 = await resp2.json();
+    const data = json2.value || json2;
 
     // Match TDX results to our temple list by name similarity
     let enriched = 0;
@@ -1013,7 +1004,7 @@ async function fetchTDXTemples() {
 async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
-    const rawUrl2 = 'https://tdx.transportdata.tw/api/tourism/v2/Tourism/Activity/Taipei?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
+    const rawUrl2 = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Activity?$top=20&$select=Name,Description,City,StartTime,EndTime,Location,Picture&$format=json';
     const urlWithToken2 = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl2) + '&token=' + encodeURIComponent(tdxToken);
     const resp = await fetch(urlWithToken2);
     if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
