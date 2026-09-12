@@ -944,16 +944,8 @@ function showStatus(msg, autoHide=true) {
 async function getTDXToken() {
   try {
     showStatus('🔑 正在取得 TDX 授權...', false);
-    const tokenUrl = PROXY + '?url=' + encodeURIComponent('https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token');
-    const resp = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type:    'client_credentials',
-        client_id:     TDX_CLIENT_ID,
-        client_secret: TDX_CLIENT_SECRET
-      })
-    });
+    const tokenUrl = PROXY + '?action=token&id=' + encodeURIComponent(TDX_CLIENT_ID) + '&secret=' + encodeURIComponent(TDX_CLIENT_SECRET);
+    const resp = await fetch(tokenUrl);
     if (!resp.ok) throw new Error('Token request failed: ' + resp.status);
     const data = await resp.json();
     tdxToken = data.access_token;
@@ -975,12 +967,8 @@ async function fetchTDXTemples() {
     const url = PROXY + '?url=' + encodeURIComponent(rawUrl);
 
     const urlWithToken = url + '&authorization=' + encodeURIComponent('Bearer ' + tdxToken);
-    const resp = await fetch(url, {
-      headers: { 
-        'Authorization': 'Bearer ' + tdxToken,
-        'Accept': 'application/json'
-      }
-    });
+    const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
+    const resp = await fetch(urlWithToken);
     if (!resp.ok) throw new Error('Scenic spots request failed: ' + resp.status);
     const data = await resp.json();
 
@@ -1018,14 +1006,8 @@ async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
     const rawUrl2 = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity/ALL?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
-    const url = PROXY + '?url=' + encodeURIComponent(rawUrl2);
-
-    const resp = await fetch(url, {
-      headers: { 
-        'Authorization': 'Bearer ' + tdxToken,
-        'Accept': 'application/json'
-      }
-    });
+    const urlWithToken2 = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl2) + '&token=' + encodeURIComponent(tdxToken);
+    const resp = await fetch(urlWithToken2);
     if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
     const data = await resp.json();
 
