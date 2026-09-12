@@ -971,11 +971,15 @@ async function fetchTDXTemples() {
   if (!tdxToken) return;
   try {
     // Filter for temple-related scenic spots in Taiwan
-    const rawUrl = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot?%24top=30&%24select=ScenicSpotID%2CScenicSpotName%2CDescription%2CAddress%2CCity%2CPicture%2CPosition&%24format=JSON';
+    const rawUrl = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot/ALL?$top=30&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON';
     const url = PROXY + '?url=' + encodeURIComponent(rawUrl);
 
+    const urlWithToken = url + '&authorization=' + encodeURIComponent('Bearer ' + tdxToken);
     const resp = await fetch(url, {
-      headers: { Authorization: `Bearer ${tdxToken}` }
+      headers: { 
+        'Authorization': 'Bearer ' + tdxToken,
+        'Accept': 'application/json'
+      }
     });
     if (!resp.ok) throw new Error('Scenic spots request failed: ' + resp.status);
     const data = await resp.json();
@@ -1013,11 +1017,14 @@ async function fetchTDXTemples() {
 async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
-    const rawUrl2 = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity?%24top=20&%24select=ActivityID%2CActivityName%2CDescription%2CCity%2CStartTime%2CEndTime%2CLocation%2CPicture&%24format=JSON';
+    const rawUrl2 = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/Activity/ALL?$top=20&$select=ActivityID,ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=JSON';
     const url = PROXY + '?url=' + encodeURIComponent(rawUrl2);
 
     const resp = await fetch(url, {
-      headers: { Authorization: `Bearer ${tdxToken}` }
+      headers: { 
+        'Authorization': 'Bearer ' + tdxToken,
+        'Accept': 'application/json'
+      }
     });
     if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
     const data = await resp.json();
