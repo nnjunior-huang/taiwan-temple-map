@@ -964,9 +964,6 @@ async function fetchTDXTemples() {
   try {
     // Filter for temple-related scenic spots in Taiwan
     const rawUrl = 'https://tdx.transportdata.tw/api/basic/v2/Tourism/ScenicSpot/ALL?$top=30&$select=ScenicSpotID,ScenicSpotName,Description,Address,City,Picture,Position&$format=JSON';
-    const url = PROXY + '?url=' + encodeURIComponent(rawUrl);
-
-    const urlWithToken = url + '&authorization=' + encodeURIComponent('Bearer ' + tdxToken);
     const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
     const resp = await fetch(urlWithToken);
     if (!resp.ok) throw new Error('Scenic spots request failed: ' + resp.status);
