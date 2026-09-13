@@ -964,7 +964,7 @@ async function fetchTDXTemples() {
   try {
     // Filter for temple-related scenic spots in Taiwan
     // Fetch temples from multiple cities
-    const rawUrl = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction?$top=30&$select=ScenicSpotID,Name,Description,Address,City,Picture,Position&$format=json';
+    const rawUrl = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction?$top=50&$format=json';
     const urlWithToken = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl) + '&token=' + encodeURIComponent(tdxToken);
     const resp2 = await fetch(urlWithToken);
     if (!resp2.ok) throw new Error('Scenic spots request failed: ' + resp2.status);
@@ -974,15 +974,20 @@ async function fetchTDXTemples() {
     // Match TDX results to our temple list by name similarity
     let enriched = 0;
     data.forEach(spot => {
+      const spotName = spot.AttractionName || spot.ScenicSpotName || '';
       const match = TEMPLES.find(t =>
-        spot.ScenicSpotName && (
-          t.zh.name.includes(spot.ScenicSpotName.slice(0,4)) ||
-          spot.ScenicSpotName.includes(t.zh.name.slice(0,4))
+        spotName && (
+          t.zh.name.includes(spotName.slice(0,4)) ||
+          spotName.includes(t.zh.name.slice(0,4))
         )
       );
       if (match) {
-        // Enrich with TDX data
-        if (spot.Picture?.PictureUrl1) match.tdxPhoto = spot.Picture.PictureUrl1;
+        // Enrich with TDX data - use Images array
+        if (spot.Images && spot.Images.length > 0) {
+          match.tdxPhoto = spot.Images[0].URL;
+        } else if (spot.Picture?.PictureUrl1) {
+          match.tdxPhoto = spot.Picture.PictureUrl1;
+        }
         if (spot.Description && spot.Description.length > 10) {
           match.zh.descTDX = spot.Description.slice(0, 120) + '...';
         }
@@ -1004,15 +1009,15 @@ async function fetchTDXTemples() {
 async function fetchTDXActivities() {
   if (!tdxToken) return;
   try {
-    const rawUrl2 = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Activity?$top=20&$select=Name,Description,City,StartTime,EndTime,Location,Picture&$format=json';
+    const rawUrl2 = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Activity?$top=20&$select=ActivityName,Description,City,StartTime,EndTime,Location,Picture&$format=json';
     const urlWithToken2 = PROXY + '?action=api&url=' + encodeURIComponent(rawUrl2) + '&token=' + encodeURIComponent(tdxToken);
     const resp = await fetch(urlWithToken2);
     if (!resp.ok) throw new Error('Activity request failed: ' + resp.status);
-    const data = await resp.json();
+    const json3 = await resp.json();
+    const actData = json3.value || json3;
 
-    if (data.length > 0) {
-      // Add TDX live activities to calendar display
-      window.tdxActivities = data;
+    if (actData.length > 0) {
+      window.tdxActivities = actData;
       buildCalendar(); // rebuild with live data
       showStatus(`📅 即時廟會活動已更新（${data.length} 筆）`);
     }
